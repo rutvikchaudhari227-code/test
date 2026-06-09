@@ -42,7 +42,4 @@ if __name__ == "__main__":
             from_curr = input("From Currency (e.g., USD, EUR, GBP): ")
             to_curr = input("To Currency (e.g., INR, JPY, CAD): ")
             
-            result = converter.convert(amt, from_curr, to_curr)
-            print(f"{amt} {from_curr.upper()} = {result} {to_curr.upper()}")
-        except ValueError:
-            print("Please enter a valid numeric amount.")
+        

@@ -1,10 +1,48 @@
 hallo this my project
-rom module import add, sub
- 
-num1 = int(input("Enter first number:"))
-num2 = int(input("Enter second number:"))
- 
-print("Addition", add(num1, num2))
-print("Subtraction", sub(num1, num2))
-print("Multiplication", mul(num1, num2))
-print("Division", div(num1, num2))
+import json
+import urllib.request
+
+class CurrencyConverter:
+    def __init__(self):
+        # Using a free, public currency data API
+        self.api_url = "https://er-api.com"
+        self.rates = self.fetch_rates()
+
+    def fetch_rates(self):
+        try:
+            with urllib.request.urlopen(self.api_url, timeout=5) as response:
+                data = json.loads(response.read().decode())
+                return data.get("rates", {})
+        except Exception as e:
+            print(f"Error fetching live exchange rates: {e}")
+            return {}
+
+    def convert(self, amount, from_currency, to_currency):
+        if not self.rates:
+            return "Unable to convert: No exchange rate data available."
+            
+        from_currency = from_currency.upper()
+        to_currency = to_currency.upper()
+
+        if from_currency not in self.rates or to_currency not in self.rates:
+            return "Invalid currency code provided."
+
+        # Convert baseline amount to USD, then scale to the target currency
+        amount_in_usd = amount / self.rates[from_currency]
+        converted_amount = amount_in_usd * self.rates[to_currency]
+        return round(converted_amount, 2)
+
+if __name__ == "__main__":
+    print("--- Live Currency Converter ---")
+    converter = CurrencyConverter()
+    
+    if converter.rates:
+        try:
+            amt = float(input("Enter amount to convert: "))
+            from_curr = input("From Currency (e.g., USD, EUR, GBP): ")
+            to_curr = input("To Currency (e.g., INR, JPY, CAD): ")
+            
+            result = converter.convert(amt, from_curr, to_curr)
+            print(f"{amt} {from_curr.upper()} = {result} {to_curr.upper()}")
+        except ValueError:
+            print("Please enter a valid numeric amount.")
